@@ -1,0 +1,2 @@
+export FLASK_APP = aviation.py
+python3 -m flask run
