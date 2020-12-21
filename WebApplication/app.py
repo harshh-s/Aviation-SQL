@@ -3,7 +3,12 @@ import pyodbc
 
 app = Flask(__name__)
 
-
+server = 'dbt-lab.database.windows.net'
+database = 'Aviation'
+username = 'dbtlab'
+password = 'alpzulAZ5'   
+driver= '{ODBC Driver 17 for SQL Server}'
+conn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
 
 #index.html
 @app.route('/', methods=['GET', 'POST'])
@@ -18,10 +23,10 @@ def flights():
         dest = request.form['destination']
         date = request.form['date']
         print(src, dest, date)
-        xyz = "SELECT * FROM flight WHERE flightsource = '" + src + "' AND flightdest = '" + dest +"';"
+        query = "SELECT * FROM flight WHERE flightsource = '" + src + "' AND flightdest = '" + dest +"';"
 
         with conn.cursor() as cursor:
-            cursor.execute(xyz)
+            cursor.execute(query)
             data = cursor.fetchall()
             # while row:
             #     print (str(row[0]) + " " + str(row[1]))
@@ -30,6 +35,21 @@ def flights():
         return render_template('flights.html', data=data)
     else:
         return render_template('index.html')
+
+#contact.html
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == "POST":
+        name = request.form['name']
+        mail = request.form['email']
+        phone = request.form['phone']
+        message = request.form['message']
+
+        query = "INSERT INTO contactus VALUES('" + name + "', '" + mail + "', '" + phone + "', '" + message + "');"
+        with conn.cursor() as cursor:
+            cursor.execute("INSERT INTO contactus VALUES(?, ?, ?, ?)", (name, mail, phone, message))
+
+    return render_template('contact.html')
 
 #destination.html
 @app.route('/destination')
@@ -40,11 +60,6 @@ def destination():
 @app.route('/pricing')
 def pricing():
     return render_template('pricing.html')
-
-#contact.html
-@app.route('/contact')
-def contact():
-    return render_template('contact.html')
 
 #
 if __name__ == '__main__':
