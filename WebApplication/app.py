@@ -21,8 +21,7 @@ def flights():
     if request.method == "POST":
         src = request.form['source']
         dest = request.form['destination']
-        date = request.form['date']
-        print(src, dest, date)
+        print(src, dest)
         query = "SELECT * FROM flight WHERE flightsource = '" + src + "' AND flightdest = '" + dest +"';"
 
         with conn.cursor() as cursor:
@@ -31,7 +30,7 @@ def flights():
             # while row:
             #     print (str(row[0]) + " " + str(row[1]))
             #     row = cursor.fetchone()
-            
+        
         return render_template('flights.html', data=data)
     else:
         return render_template('index.html')
